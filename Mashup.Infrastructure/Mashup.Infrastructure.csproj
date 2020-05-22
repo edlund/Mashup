@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Repositories\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="4.7.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mashup.Core\Mashup.Core.csproj" />
+    <ProjectReference Include="..\Mashup.Domain\Mashup.Domain.csproj" />
+    <ProjectReference Include="..\Mashup.Utility\Mashup.Utility.csproj" />
+  </ItemGroup>
+
+</Project>
