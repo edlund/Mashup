@@ -1,12 +1,22 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 
 namespace Mashup.Domain.Models.Rest.Produced
 {
     public class AlbumSummary
     {
+        [JsonPropertyName("id")]
         public string Id { get; set; }
+
+        [JsonPropertyName("name")]
         public string Name { get; set; }
+
+        [JsonPropertyName("released")]
         public string Released { get; set; }
-        public string CoverArtUri { get; set; }
+
+#nullable enable
+        [JsonPropertyName("coverArtUri")]
+        public string? CoverArtUri { get; set; }
+#nullable restore
     }
 }

@@ -1,5 +1,5 @@
 ﻿
-namespace Mashup.Core.Models
+namespace Mashup.Core.Ids
 {
     public abstract class StringIdBase
     {
@@ -20,10 +20,12 @@ namespace Mashup.Core.Models
             Value = value;
         }
 
-        /**
-         * Shall try to sanitize a potentially unsafe value and shall
-         * fail with FormatException if unable.
-         */
+        /// <summary>
+        /// Shall try to sanitize a potentially unsafe value and shall
+        /// fail with FormatException if unable.
+        /// </summary>
+        /// <param name="value">The unsafe value.</param>
+        /// <returns>The safe value.</returns>
         protected abstract string Sanitize(string value);
     }
 }

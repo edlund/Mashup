@@ -52,7 +52,7 @@ namespace Mashup.Infrastructure.Services
             var wdEntity = wdEntitiesHolder?.Entities?.FirstOrDefault().Value;
             if (wdEntity != null)
             {
-                var wpTitles = new WpTitles(wdEntity.EnSiteLink().Title);
+                var wpTitles = new WpTitles(wdEntity.EnSiteLink.Title);
                 return await _wpQueryRestClient.GetOneQueryHolderAsync(wpTitles, cancellationToken);
             }
             return null;
@@ -61,11 +61,13 @@ namespace Mashup.Infrastructure.Services
         public async Task<ArtistSummary> GetOneAsync(MbId mbId, CancellationToken cancellationToken = default)
         {
             var mbArtistResponse = await _mbArtistRestClient.GetOneAsync(mbId, cancellationToken);
-            var caAlbumTasks = (
-                from releaseGroup in mbArtistResponse.Content.ReleaseGroups
-                select _caAlbumRestClient.GetOneAsync(new MbId(releaseGroup.Id))
-            ).ToArray();
 
+            mbArtistResponse.EnsureSuccessStatusCode();
+
+            var caAlbumTasks = mbArtistResponse.Content.ReleaseGroups
+                .Select(releaseGroup => _caAlbumRestClient.GetOneAsync(new MbId(releaseGroup.Id)))
+                .ToArray();
+            
             var wdEntitiesHolderResponse = await GetOneWdEntitiesHolderAsync(mbArtistResponse.Content, cancellationToken);
             var wpQueryHolderResponse = await GetOneWpQueryHolderAsync(wdEntitiesHolderResponse?.Content, cancellationToken);
 
@@ -76,10 +78,10 @@ namespace Mashup.Infrastructure.Services
             var caImagesUris = caAlbumTasks
                 .Select(caAlbumTask => caAlbumTask.Result)
                 .Select(caAlbumResponse => caAlbumResponse.Content)
-                .Select(caAlbum => caAlbum?.FrontCover()?.Image);
+                .Select(caAlbum => caAlbum?.FrontCover?.Image);
 
             // Zip ReleaseGroup Ids with the Cover Art Image Uris
-            // Image Uris which resulted in any error are null, which is fine
+            // Image requests which resulted in any error are null here, which is fine
             var mbReleaseGroupIdsToCaImageUris = mbReleaseGroupIds
                 .Zip(caImagesUris, (k, v) => new { k, v })
                 .ToDictionary(x => x.k, x => x.v);
@@ -89,15 +91,16 @@ namespace Mashup.Infrastructure.Services
                 Id = mbArtistResponse.Content.Id,
                 Name = mbArtistResponse.Content.Name,
                 Extract = wpQueryHolderResponse?.Content?.Query?.Pages.FirstOrDefault().Value?.Extract,
-                Albums = mbArtistResponse.Content.ReleaseGroups.Select(releaseGroup => new AlbumSummary
-                {
-                    Id = releaseGroup.Id,
-                    Name = releaseGroup.Title,
-                    Released = releaseGroup.FirstReleaseDate,
-                    CoverArtUri = mbReleaseGroupIdsToCaImageUris.GetValueOrDefault(releaseGroup.Id)
-                })
-                .OrderBy(albumSummary => albumSummary.Released)
-                .ThenBy(albumSummary => albumSummary.Name)
+                Albums = mbArtistResponse.Content.ReleaseGroups
+                    .Select(releaseGroup => new AlbumSummary
+                    {
+                        Id = releaseGroup.Id,
+                        Name = releaseGroup.Title,
+                        Released = releaseGroup.FirstReleaseDate,
+                        CoverArtUri = mbReleaseGroupIdsToCaImageUris.GetValueOrDefault(releaseGroup.Id)
+                    })
+                    .OrderBy(albumSummary => albumSummary.Released)
+                    .ThenBy(albumSummary => albumSummary.Name)
             };
         }
     }

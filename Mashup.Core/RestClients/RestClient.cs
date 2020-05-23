@@ -8,13 +8,15 @@ using System.Threading.Tasks;
 
 namespace Mashup.Core.RestClients
 {
-    /**
-     * Base class for REST clients. It wraps some boilerplate
-     * code for dealing with HttpClient.
-     * 
-     * FIXME Add support for formats other than JSON (XML, YAML).
-     * FIXME Add support for authentication.
-     */
+    /// <summary>
+    /// Base class for REST clients.It wraps some boilerplate
+    /// code for dealing with HttpClient.
+    /// </summary>
+    /// <remarks>
+    /// FIXME Add support for formats other than JSON (XML, YAML).
+    /// FIXME Add support for authentication.
+    /// </remarks>
+    /// <typeparam name="TFormat">The data format of the REST API.</typeparam>
     public abstract class RestClient<TFormat> where TFormat : IFormat, new()
     {
         private readonly IFormat _format;
@@ -52,27 +54,29 @@ namespace Mashup.Core.RestClients
             return new RestResponse<TResponseModel>(responseBody, responseModel, message);
         }
 
-        public async Task<RestResponse<TResponseModel>> GetAsync<TResponseModel>(Uri uri, CancellationToken cancellationToken = default)
-            where TResponseModel : class => await ExecuteWithoutRequestBodyAsync<TResponseModel>(
-                HttpClientProvider.HttpClient.GetAsync, uri, cancellationToken);
+        public async Task<RestResponse<TResponseModel>> GetAsync<TResponseModel>(Uri uri,
+            CancellationToken cancellationToken = default)
+                where TResponseModel : class => await ExecuteWithoutRequestBodyAsync<TResponseModel>(
+                    HttpClientProvider.HttpClient.GetAsync, uri, cancellationToken);
 
-        public async Task<RestResponse<TResponseModel>> DeleteAsync<TResponseModel>(Uri uri, CancellationToken cancellationToken = default)
-            where TResponseModel : class => await ExecuteWithoutRequestBodyAsync<TResponseModel>(
-                HttpClientProvider.HttpClient.DeleteAsync, uri, cancellationToken);
+        public async Task<RestResponse<TResponseModel>> DeleteAsync<TResponseModel>(Uri uri,
+            CancellationToken cancellationToken = default)
+                where TResponseModel : class => await ExecuteWithoutRequestBodyAsync<TResponseModel>(
+                    HttpClientProvider.HttpClient.DeleteAsync, uri, cancellationToken);
 
         public async Task<RestResponse<TResponseModel>> PatchAsync<TResponseModel, TRequestModel>(
             Uri uri, TRequestModel requestModel, CancellationToken cancellationToken = default)
-                where TResponseModel : class where TRequestModel : class => await ExecuteWithRequestBodyAsync<TResponseModel, TRequestModel>(
-                    HttpClientProvider.HttpClient.PostAsync, uri, requestModel, cancellationToken);
+                where TResponseModel : class where TRequestModel : class => await ExecuteWithRequestBodyAsync
+                    <TResponseModel, TRequestModel>(HttpClientProvider.HttpClient.PostAsync, uri, requestModel, cancellationToken);
 
         public async Task<RestResponse<TResponseModel>> PostAsync<TResponseModel, TRequestModel>(
             Uri uri, TRequestModel requestModel, CancellationToken cancellationToken = default)
-                where TResponseModel : class where TRequestModel : class => await ExecuteWithRequestBodyAsync<TResponseModel, TRequestModel>(
-                    HttpClientProvider.HttpClient.PostAsync, uri, requestModel, cancellationToken);
+                where TResponseModel : class where TRequestModel : class => await ExecuteWithRequestBodyAsync
+                    <TResponseModel, TRequestModel>(HttpClientProvider.HttpClient.PostAsync, uri, requestModel, cancellationToken);
 
         public async Task<RestResponse<TResponseModel>> PutAsync<TResponseModel, TRequestModel>(
             Uri uri, TRequestModel requestModel, CancellationToken cancellationToken = default)
-                where TResponseModel : class where TRequestModel : class => await ExecuteWithRequestBodyAsync<TResponseModel, TRequestModel>(
-                    HttpClientProvider.HttpClient.PutAsync, uri, requestModel, cancellationToken);
+                where TResponseModel : class where TRequestModel : class => await ExecuteWithRequestBodyAsync
+                    <TResponseModel, TRequestModel>(HttpClientProvider.HttpClient.PutAsync, uri, requestModel, cancellationToken);
     }
 }

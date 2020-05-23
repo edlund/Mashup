@@ -12,8 +12,8 @@ namespace Mashup.Domain.Models.Rest.Consumed.CoverArtArchive
         [JsonPropertyName("release")]
         public string Release { get; set; }
 
-        public CaImage FrontCover() => Images.FirstOrDefault(image => image.Front);
+        public CaImage FrontCover => Images.FirstOrDefault(image => image.Front);
 
-        public CaImage BackCover() => Images.FirstOrDefault(image => image.Back);
+        public CaImage BackCover => Images.FirstOrDefault(image => image.Back);
     }
 }

@@ -13,6 +13,6 @@ namespace Mashup.Domain.Models.Rest.Consumed.Wikidata
         [JsonPropertyName("sitelinks")]
         public IDictionary<string, WdSiteLink> SiteLinks { get; set; }
 
-        public WdSiteLink EnSiteLink() => SiteLinks.FirstOrDefault(pair => pair.Key == "enwiki").Value;
+        public WdSiteLink EnSiteLink => SiteLinks.FirstOrDefault(pair => pair.Key == "enwiki").Value;
     }
 }

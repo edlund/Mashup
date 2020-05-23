@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Mashup.Core.HttpClients;
 using Mashup.Domain.RestClients.CoverArtArchive;
 using Mashup.Domain.RestClients.MusicBrainz;
@@ -21,6 +17,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Mime;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Mashup.Api
 {
@@ -35,7 +39,28 @@ namespace Mashup.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers().ConfigureApiBehaviorOptions(options =>
+            {
+                options.InvalidModelStateResponseFactory = context =>
+                {
+                    var result = new BadRequestObjectResult(context.ModelState);
+                    result.ContentTypes.Add(MediaTypeNames.Application.Json);
+                    return result;
+                };
+            });
+
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Mashup",
+                    Version = "v1"
+                });
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                options.IncludeXmlComments(xmlPath);
+            });
 
             services.AddSingleton<IHttpClientProvider, HttpClientProvider>();
 
@@ -51,14 +76,26 @@ namespace Mashup.Api
         {
             if (environment.IsDevelopment())
             {
-                builder.UseDeveloperExceptionPage();
+                builder.UseExceptionHandler("/error-development");
             }
-
-            builder.UseHttpsRedirection();
+            else
+            {
+                // Postman does not work well self-signed certificates.
+                // Only require HTTPS in test/stage/production where we need
+                // at least "Let's Encrypt" anyway.
+                builder.UseHttpsRedirection();
+                builder.UseExceptionHandler("/error");
+            }
+            builder.UseStatusCodePagesWithReExecute("/error/{0}");
 
             builder.UseRouting();
 
             builder.UseAuthorization();
+            builder.UseSwagger();
+            builder.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Mashup API V1");
+            });
 
             builder.UseEndpoints(endpoints =>
             {

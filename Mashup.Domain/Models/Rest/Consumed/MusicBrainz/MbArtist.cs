@@ -50,13 +50,13 @@ namespace Mashup.Domain.Models.Rest.Consumed.MusicBrainz
         public string? GenderId { get; set; }
 #nullable restore
 
+        public MbRelation WikidataRelation => Relations
+            .FirstOrDefault(relation => relation.Type == "wikidata");
+
         public override IEnumerable<string> Includes() => new List<string>
         {
             "release-groups",
             "url-rels"
         };
-
-        public MbRelation WikidataRelation => Relations
-            .FirstOrDefault(relation => relation.Type == "wikidata");
     }
 }

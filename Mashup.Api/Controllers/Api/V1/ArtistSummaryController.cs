@@ -12,6 +12,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Mashup.Api.Controllers.Api.V1
 {
+    /// <summary>
+    /// Artist Summaries.
+    /// </summary>
     [Route("api/v1/[controller]")]
     [ApiController]
     public class ArtistSummaryController : ApiControllerBase
@@ -25,12 +28,16 @@ namespace Mashup.Api.Controllers.Api.V1
             _artistSummaryService = artistSummaryService;
         }
 
+        /// <summary>
+        /// Get One `ArtistSummary` from a given `MBID`.
+        /// </summary>
+        /// <param name="mbId">The MusicBrainzID.</param>
+        /// <returns>The requested `ArtistSummary`.</returns>
         [HttpGet("getone")]
         public async Task<ArtistSummary> GetOne(
-            [FromQuery] string mbId,
-            CancellationToken cancellationToken = default)
+            [FromQuery] string mbId)
         {
-            return await _artistSummaryService.GetOneAsync(new MbId(mbId), cancellationToken);
+            return await _artistSummaryService.GetOneAsync(new MbId(mbId), default);
         }
     }
 }

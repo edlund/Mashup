@@ -6,6 +6,11 @@
     <RootNamespace>Mashup.Api</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
   </ItemGroup>
@@ -15,6 +20,5 @@
     <ProjectReference Include="..\Mashup.Domain\Mashup.Domain.csproj" />
     <ProjectReference Include="..\Mashup.Infrastructure\Mashup.Infrastructure.csproj" />
   </ItemGroup>
-
 
 </Project>

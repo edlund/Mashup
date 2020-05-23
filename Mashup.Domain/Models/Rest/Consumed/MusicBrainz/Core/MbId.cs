@@ -1,4 +1,4 @@
-﻿using Mashup.Core.Models;
+﻿using Mashup.Core.Ids;
 using System;
 
 namespace Mashup.Domain.Models.Rest.Consumed.MusicBrainz.Core

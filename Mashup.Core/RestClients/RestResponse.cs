@@ -1,5 +1,4 @@
-﻿using System.Net;
-using System.Net.Http;
+﻿using System.Net.Http;
 
 namespace Mashup.Core.RestClients
 {
@@ -7,17 +6,24 @@ namespace Mashup.Core.RestClients
     {
         public string Body { get; }
         public T Content { get; }
-        public bool IsSuccessStatusCode { get; }
-        public string ReasonPhrase { get; }
-        public HttpStatusCode StatusCode { get; }
-
+        public HttpResponseMessage Message { get; }
+        
         public RestResponse(string body, T content, HttpResponseMessage message)
         {
             Body = body;
             Content = content;
-            IsSuccessStatusCode = message.IsSuccessStatusCode;
-            ReasonPhrase = message.ReasonPhrase;
-            StatusCode = message.StatusCode;
+            Message = message;
+        }
+
+        public void EnsureSuccessStatusCode()
+        {
+            if (!Message.IsSuccessStatusCode)
+            {
+                throw new RestException($"Request to endpoint \"{Message.RequestMessage.RequestUri}\" failed")
+                {
+                    StatusCode = Message.StatusCode
+                };
+            }
         }
     }
 }

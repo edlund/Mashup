@@ -9,7 +9,7 @@ namespace Mashup.Test.Projects.Core.Extensions
     public class StringExtensionsTests
     {
         [TestMethod]
-        public void Test_Chunk_ValidSizesGiven_CorrectChunk()
+        public void Test_Chunk_GivenValidSizes_ChunksAreCorrect()
         {
             CollectionAssert.AreEqual(
                 new List<string> { "a", "b", "c", "d", "e" },
@@ -20,7 +20,7 @@ namespace Mashup.Test.Projects.Core.Extensions
         }
 
         [TestMethod]
-        public void Test_SplitCamelCase_CamelCaseStringsGiven_CorrectSplit()
+        public void Test_SplitCamelCase_GivenCamelCaseStrings_SplitIsCorrect()
         {
             CollectionAssert.AreEqual(
                 new List<string> { "Hello" },

@@ -1,4 +1,4 @@
-﻿using Mashup.Core.Models;
+﻿using Mashup.Core.Ids;
 using System;
 using System.Text.RegularExpressions;
 

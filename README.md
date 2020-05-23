@@ -6,7 +6,7 @@ A job interview challenge.
 ## Summary
 
 The task: Create a REST API that combines API results from MusicBrainz,
-Wikidata​/​Wikipedia and Cover Art Archive​.
+Wikidata​/​Wikipedia and Cover Art Archive.
 
 The challenge: The APIs that are to be consumed are sometimes on the
 slow side and will impose rate limiting under heavy loads.
@@ -40,6 +40,38 @@ see long response times and long request queues. We should therefore try to
 run requests against our consumed REST APIs asynchronously and in parallel
 when possible. This is handled with async/await.
 
+Since we have many third-party REST APIs we depend on, we will practice
+a form of "Graceful Degradation"; only the initial request to MusicBrainz
+to retrieve basic Artist information must be successful. Every other
+request can fail, if it does we will simply leave out the missing information.
+
+We should always interact with the data in an as strongly typed manner
+as possible. This will require more work initially, but it will allow us
+to avoid many common pitfalls otherwise discovered at runtime and will
+allow us to work faster when the PoC is later reworked into a functional
+product (if it ever is).
+
+The documentation of any REST API is essential for its usefulness. We will
+use Swashbuckle and Swagger to auto-generate the documentation for us.
+
+    https://localhost:5001/swagger/index.html
+
+## Current Problems
+
+Things that are inferior or missing due to time constraints.
+
+### Documentation
+
+More documentation would allow Swagger to shine.
+
+### Error handling
+
+The error handling is servicable for a PoC, but nothing to write home about.
+For example; the InvalidModelStateResponseFactory is set up but instead of
+proper view model validation, a hack using a ValidationException is used.
+
+### Local caching
+
 Local caching of the result of requests to our REST API allows us to serve
 subsequent requests for the same MBID (much) faster. The question is of course
 what client behaviour we can expect; a local cache isn't worth that much
@@ -53,22 +85,78 @@ behaviour. Had the data model been more complex, Postgres would likely have
 been a better choice. (Though it should be noted that Document and Relational
 databases are meeting in the middle when it comes to features; Joins and
 Transactions for Document databases and Array and Unstructured fields for
-Relational databases.) This will NOT be done as part of the PoC.
+Relational databases.)
 
 Given enough time the local caching could be taken to its next level as
 well; we could try to profile user behaviour to preemptively cache artists
 we suspect will be requested in the future (a simple form could work with
-genres and related artists). We could obviously also crawl and cache as
-much as possible on our side, but we don't actually want to store more
-than necessary, even though storage is pretty cheap. This will NOT be
-done as part of the PoC.
+genres and related artists, a complex form could work with machine learning
+(which would be fun, but not necessary worth the time/money)). We could
+obviously also crawl our consumed REST APIs and cache as much as possible
+on our side, but we don't actually want to store more than necessary, even
+though storage is pretty cheap nowadays.
+
+### Logging
+
+Only basic logging is configured, ideally we would use a third party
+library and logging service, e.g. NLog (library) and PaperTrail (service)
+would probably be a nice combo in our case.
+
+### More Tests
+
+Currently the automatic tests are almost exclusively blackbox/integration
+tests where we make a request to a test server and check what it might
+respond with.
+
+In my personal opinion, this is fine for a PoC; we will likely rework
+significant parts of our solution when we start leaving the "PoC phase",
+and the most useful kind of test then is likely seeing that the overall
+behaviour stays the same, regardless of what we do behind the scenes.
+Unit tests can be significantly fleshed out once the design starts maturing.
+With that excuse out of the way; more unit tests never hurts...
+
+One obvious problem with this approach is that the test coverage will
+be terrible in reports, even though it actually looks okay when we look
+what is actually being tested by the blackbox tests. Another problem with
+this approach is that we write our tests using data from third party sources,
+which might change, causing test failures on our side. We can mitigate this
+by writing tests that cares only about data validation (not the actual data)
+or by selecting test data that is very unlikely to change. We are currently
+using a mix of these two for the PoC. The data model should allow easy
+mocking of data sources for future unit tests.
+
+### Sloppy data modeling
+
+The data models are not always complete and are sometimes only able to
+handle the certain, exact responses from the REST APIs. For our limited
+use cases in this PoC, this should be acceptable. However, the models
+should be revisited and reworked (at least a bit), before more features
+are implemented.
+
+### Sloppy interface modeling
+
+The data interfaces should probably be revisited at the same time that
+the data models are. Fleshed out models will likely require some changes
+to how interaction with them happens.
+
+### Support for cloud deploys
+
+The first step would be to evaluate which platform to use. Any of the big
+ones available could be a good fit. Once a platform had been selected, the
+next step would be to set up CI/CD and to tweak the automatic scaling.
+
+## Next Steps
+
+If I were to take this "to the next level", where would I begin?
+
+Certainly error handling, local caching and logging.
 
 ## Overview
 
 The solution is organized as follows:
 
-- Mashup.Api: The REST API
-- Mashup.Core: The core functionality that most projects depend on
+- Mashup.Api: The REST API, i.e. Mvc+Api controllers
+- Mashup.Core: The core functionality central to Mashup
 - Mashup.Domain: The data model and the interfaces for interaction with it
 - Mashup.Infrastructure: The implementations of the data model interfaces
 - Mashup.Test: Unit, Integration and Blackbox tests

@@ -1,7 +1,7 @@
 ﻿
 namespace Mashup.Core.Models
 {
-    public class ModelBase
+    public class ConsumedModelBase
     {
     }
 }

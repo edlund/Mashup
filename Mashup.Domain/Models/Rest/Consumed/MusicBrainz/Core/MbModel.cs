@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Mashup.Domain.Models.Rest.Consumed.MusicBrainz.Core
 {
-    public abstract class MbModel : ModelBase
+    public abstract class MbModel : ConsumedModelBase
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }

@@ -5,10 +5,6 @@ namespace Mashup.Domain.Models.Rest.Consumed.CoverArtArchive
 {
     public class CaImage
     {
-        /*
-        [JsonPropertyName("id")]
-        public string? Id { get; set; }
-        */
         [JsonPropertyName("front")]
         public bool Front { get; set; }
 
