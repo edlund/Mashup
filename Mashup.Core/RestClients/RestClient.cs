@@ -17,7 +17,8 @@ namespace Mashup.Core.RestClients
     /// FIXME Add support for authentication.
     /// </remarks>
     /// <typeparam name="TFormat">The data format of the REST API.</typeparam>
-    public abstract class RestClient<TFormat> where TFormat : IFormat, new()
+    public abstract class RestClient<TFormat>
+        where TFormat : IFormat, new()
     {
         private readonly IFormat _format;
 
@@ -35,13 +36,13 @@ namespace Mashup.Core.RestClients
         protected async Task<RestResponse<TResponseModel>> ExecuteWithRequestBodyAsync<TResponseModel, TRequestModel>(
             Func<Uri, StringContent, CancellationToken, Task<HttpResponseMessage>> action, Uri uri,
             TRequestModel requestModel, CancellationToken cancellationToken = default)
-                where TResponseModel : class where TRequestModel : class
+                where TResponseModel : class
+                where TRequestModel : class
         {
-            var request = new StringContent(_format.Serialize(requestModel), RequestEncoding, "application/json");
-            var message = await action(uri, request, cancellationToken);
+            var requestBody = new StringContent(_format.Serialize(requestModel), RequestEncoding, _format.MediaType);
+            var message = await action(uri, requestBody, cancellationToken);
             var responseBody = await message.Content.ReadAsStringAsync();
-            TResponseModel responseModel = message.IsSuccessStatusCode ? _format.Deserialize<TResponseModel>(responseBody) : default;
-            return new RestResponse<TResponseModel>(responseBody, responseModel, message);
+            return new RestResponse<TResponseModel>(responseBody, _format, message);
         }
 
         protected async Task<RestResponse<TResponseModel>> ExecuteWithoutRequestBodyAsync<TResponseModel>(
@@ -50,8 +51,7 @@ namespace Mashup.Core.RestClients
         {
             var message = await action(uri, cancellationToken);
             var responseBody = await message.Content.ReadAsStringAsync();
-            TResponseModel responseModel = message.IsSuccessStatusCode ? _format.Deserialize<TResponseModel>(responseBody) : default;
-            return new RestResponse<TResponseModel>(responseBody, responseModel, message);
+            return new RestResponse<TResponseModel>(responseBody, _format, message);
         }
 
         public async Task<RestResponse<TResponseModel>> GetAsync<TResponseModel>(Uri uri,
@@ -66,17 +66,20 @@ namespace Mashup.Core.RestClients
 
         public async Task<RestResponse<TResponseModel>> PatchAsync<TResponseModel, TRequestModel>(
             Uri uri, TRequestModel requestModel, CancellationToken cancellationToken = default)
-                where TResponseModel : class where TRequestModel : class => await ExecuteWithRequestBodyAsync
-                    <TResponseModel, TRequestModel>(HttpClientProvider.HttpClient.PostAsync, uri, requestModel, cancellationToken);
+                where TResponseModel : class
+                where TRequestModel : class => await ExecuteWithRequestBodyAsync<TResponseModel, TRequestModel>(
+                    HttpClientProvider.HttpClient.PostAsync, uri, requestModel, cancellationToken);
 
         public async Task<RestResponse<TResponseModel>> PostAsync<TResponseModel, TRequestModel>(
             Uri uri, TRequestModel requestModel, CancellationToken cancellationToken = default)
-                where TResponseModel : class where TRequestModel : class => await ExecuteWithRequestBodyAsync
-                    <TResponseModel, TRequestModel>(HttpClientProvider.HttpClient.PostAsync, uri, requestModel, cancellationToken);
+                where TResponseModel : class
+                where TRequestModel : class => await ExecuteWithRequestBodyAsync<TResponseModel, TRequestModel>(
+                    HttpClientProvider.HttpClient.PostAsync, uri, requestModel, cancellationToken);
 
         public async Task<RestResponse<TResponseModel>> PutAsync<TResponseModel, TRequestModel>(
             Uri uri, TRequestModel requestModel, CancellationToken cancellationToken = default)
-                where TResponseModel : class where TRequestModel : class => await ExecuteWithRequestBodyAsync
-                    <TResponseModel, TRequestModel>(HttpClientProvider.HttpClient.PutAsync, uri, requestModel, cancellationToken);
+                where TResponseModel : class
+                where TRequestModel : class => await ExecuteWithRequestBodyAsync<TResponseModel, TRequestModel>(
+                    HttpClientProvider.HttpClient.PutAsync, uri, requestModel, cancellationToken);
     }
 }

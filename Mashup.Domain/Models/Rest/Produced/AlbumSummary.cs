@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Mashup.Core.Models;
 using System.Text.Json.Serialization;
 
 namespace Mashup.Domain.Models.Rest.Produced
 {
-    public class AlbumSummary
+    public class AlbumSummary : ProducedModelBase
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }

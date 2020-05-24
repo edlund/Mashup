@@ -160,3 +160,9 @@ The solution is organized as follows:
 - Mashup.Domain: The data model and the interfaces for interaction with it
 - Mashup.Infrastructure: The implementations of the data model interfaces
 - Mashup.Test: Unit, Integration and Blackbox tests
+
+## Closing Notes
+
+I really, really miss ReSharper as a companion during my C# adventures. I
+currently don't write enough C# in my spare time to justify the license cost
+to myself.

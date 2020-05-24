@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using Mashup.Core.Models;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Mashup.Domain.Models.Rest.Produced
 {
-    public class ArtistSummary
+    public class ArtistSummary : ProducedModelBase
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }

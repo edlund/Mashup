@@ -1,4 +1,6 @@
-﻿
+﻿using Mashup.Core.Exceptions;
+using System;
+
 namespace Mashup.Core.Ids
 {
     public abstract class StringIdBase
@@ -10,8 +12,14 @@ namespace Mashup.Core.Ids
             get { return _value; }
             set
             {
-                // FIXME Throw a validation exception
-                _value = Sanitize(value);
+                try
+                {
+                    _value = Sanitize(value);
+                }
+                catch (Exception error)
+                {
+                    throw new ValidationException($"Failed to validate string \"{value}\" as type {GetType().Name}", error);
+                }
             }
         }
 
