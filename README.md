@@ -91,7 +91,7 @@ Given enough time the local caching could be taken to its next level as
 well; we could try to profile user behaviour to preemptively cache artists
 we suspect will be requested in the future (a simple form could work with
 genres and related artists, a complex form could work with machine learning
-(which would be fun, but not necessary worth the time/money)). We could
+(which would be fun, but not necessarily worth the time and money)). We could
 obviously also crawl our consumed REST APIs and cache as much as possible
 on our side, but we don't actually want to store more than necessary, even
 though storage is pretty cheap nowadays.
@@ -146,8 +146,8 @@ ones available could be a good fit. Once a platform had been selected, the
 next step would be to set up CI/CD and to tweak the automatic scaling.
 
 The Dockerfile is a good start for the actual deployment, but it was written
-in a haste and should probably be reworked a little before used in production.
-HC SVNT DRACONES and all that...
+in a haste and should probably be reworked a little before it's used in
+production. HC SVNT DRACONES and all that...
 
 ## Next Steps
 
@@ -200,3 +200,13 @@ packages are installed. But Docker is the recommended method.
 I really, really miss ReSharper as a companion during my C# adventures. I
 currently don't write enough C# in my spare time to justify the license cost
 to myself.
+
+It also turns out that MusicBrainz will start rate-limiting much, much sooner
+than the 50 requests/sec they're mentioning in the documentation, at least
+when you request the same artists over and over. This results in a lot of
+503 responses from the REST API. If the REST API currently satisfies the
+"running under heavy load" requirement becomes a question of interpretation.
+You can load the REST API pretty heavily without it running into problems,
+but you will not get the data you want from it. Local caching will obviously
+mitigate this, as mentioned earlier (if, and only if, the usage will most
+often be of the same artists over and over), but a weekend is only so long.
