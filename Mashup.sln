@@ -16,6 +16,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EDC56E3E-C971-4F71-9ECD-70A707419C8E}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		docker-compose.yml = docker-compose.yml
+		docker-entrypoint.sh = docker-entrypoint.sh
+		Dockerfile = Dockerfile
+		DockerSetup-Ubuntu1804.sh = DockerSetup-Ubuntu1804.sh
 		README.md = README.md
 	EndProjectSection
 EndProject

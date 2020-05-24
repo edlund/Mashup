@@ -145,6 +145,10 @@ The first step would be to evaluate which platform to use. Any of the big
 ones available could be a good fit. Once a platform had been selected, the
 next step would be to set up CI/CD and to tweak the automatic scaling.
 
+The Dockerfile is a good start for the actual deployment, but it was written
+in a haste and should probably be reworked a little before used in production.
+HC SVNT DRACONES and all that...
+
 ## Next Steps
 
 If I were to take this "to the next level", where would I begin?
@@ -155,11 +159,41 @@ Certainly error handling, local caching and logging.
 
 The solution is organized as follows:
 
-- Mashup.Api: The REST API, i.e. Mvc+Api controllers
+- Mashup.Api: The REST API, i.e. Api+Mvc controllers
 - Mashup.Core: The core functionality central to Mashup
 - Mashup.Domain: The data model and the interfaces for interaction with it
 - Mashup.Infrastructure: The implementations of the data model interfaces
 - Mashup.Test: Unit, Integration and Blackbox tests
+
+## Running
+
+### Docker
+
+First, make sure you have access to an Ubuntu 18.04 LTS instance. A virtual
+machine is likely a good choice (VirtualBox is my go-to for development).
+
+Start by setting up Docker and docker-compose, you can either follow the
+official guides, or try to run `DockerSetup-Ubuntu1804.sh`, which is just
+the guides line-by-line in a bash script. If you choose the latter, you
+should manually verify the fingerprint output of the script.
+
+Tip: Make sure to checkout the solution from Ubuntu to make sure that the
+line-endings are Unix to save headache.
+
+Once this is done:
+
+    /path/to/project/root$ sudo docker-compose up
+
+If we had to release this NOW, we could easily do so by using NGINX as a
+reverse proxy for our application. Since we wouldn't have horizontal scaling
+then, we would likely have to try to tweak Kestrel's worker threads to try to
+handle high loads the best we could.
+
+### Visual Studio
+
+It should be possible to import the solution to Visual Studio 2019 and run
+it from there (which is how it was developed), provided that the appropriate
+packages are installed. But Docker is the recommended method.
 
 ## Closing Notes
 
